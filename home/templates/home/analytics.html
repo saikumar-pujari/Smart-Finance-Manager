@@ -1,0 +1,171 @@
+{% extends 'home/base.html' %}
+{% load static %}
+{% block title %}Analytics - Smart Finance Manager{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'home/css/analytics.css' %}">
+{% endblock css %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="analytics-header">
+        <h1>📊 Financial Analytics Dashboard</h1>
+        <p class="mb-0">Deep insights into your spending patterns and financial health</p>
+    </div>
+
+    <div class="row">
+        <!-- Statistics Cards -->
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h6 class="text-muted">Total Income</h6>
+                <div class="stat-value">₹{{ total_additions }}</div>
+                <div class="stat-label">Money added to account</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h6 class="text-muted">Total Expenses</h6>
+                <div class="stat-value">₹{{ total_expenses }}</div>
+                <div class="stat-label">Money spent</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h6 class="text-muted">Current Balance</h6>
+                <div class="stat-value">₹{{ account.current_balance }}</div>
+                <div class="stat-label">Available balance</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h6 class="text-muted">Savings Goal</h6>
+                <div class="stat-value">₹{{ account.target_amount }}</div>
+                <div class="stat-label">Monthly target</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="chart-container">
+                <h5 class="mb-4">💰 Expense Breakdown</h5>
+                {% if total_expenses > 0 or total_additions > 0 %}
+                    <div style="width: 300px; height: 300px; margin: 0 auto;">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Your spending distribution across different categories. Visit your Dashboard to add expenses and see real-time analytics!</p>
+                    <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                        <p class="text-muted">📈 Analytics chart will appear here once you add transactions</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="insights-box">
+                <h5 class="mb-3">🤖 AI-Powered Suggestions</h5>
+                
+                {% if suggestions %}
+                    {% for suggestion in suggestions %}
+                        <div class="ai-suggestion suggestion-{{ suggestion.type }}">
+                            <div class="suggestion-header">
+                                <span class="suggestion-emoji">{{ suggestion.emoji }}</span>
+                                <strong class="suggestion-title">{{ suggestion.title }}</strong>
+                            </div>
+                            <p class="suggestion-message">{{ suggestion.message }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="ai-suggestion suggestion-info">
+                        <div class="suggestion-header">
+                            <span class="suggestion-emoji">�</span>
+                            <strong class="suggestion-title">Start Tracking</strong>
+                        </div>
+                        <p class="suggestion-message">Add transactions to get personalized financial insights and AI recommendations!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="insights-box">
+                <h5 class="mb-3">📌 Tips for Better Financial Management</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-primary">1. Track Everything</h6>
+                        <p class="small">Record all expenses, no matter how small. This helps identify unnecessary spending.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-primary">2. Set Realistic Goals</h6>
+                        <p class="small">Define achievable monthly savings targets based on your income and expenses.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-primary">3. Review Regularly</h6>
+                        <p class="small">Check your analytics weekly to stay on top of your finances and adjust as needed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4 mb-5">
+        <div class="col-12 text-center">
+            <a href="{% url 'homepage' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'transcationpage' %}" class="btn btn-outline-primary btn-lg ms-2">
+                <i class="bi bi-list-check"></i> View Transactions
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Check if there's data to display
+    const totalExpenses = {{ total_expenses }};
+    const totalAdditions = {{ total_additions }};
+    
+    if (totalExpenses > 0 || totalAdditions > 0) {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Total Expenses', 'Available Balance'],
+                datasets: [{
+                    data: [{{ total_expenses }}, {{ account.current_balance }}],
+                    backgroundColor: ['#e74c3c', '#27ae60'],
+                    borderColor: ['#c0392b', '#229954'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 14 },
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed + '.00';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock content %}
+
