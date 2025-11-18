@@ -209,7 +209,11 @@ def finance(req):
 @login_required(login_url='loginpage')
 def home(req):
     """Main dashboard view for expense tracking."""
-    account = req.user.expense_account
+    # Get or create expense account for the user
+    try:
+        account = req.user.expense_account
+    except UserExpenseAccount.DoesNotExist:
+        account = UserExpenseAccount.objects.create(user=req.user)
     
     # Handle expense form submission
     if req.method == 'POST' and 'expense_submit' in req.POST:
