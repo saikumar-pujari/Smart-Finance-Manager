@@ -1,9 +1,15 @@
 .pricing-header {
-    color: black;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    color: #333;
     padding: 50px 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     margin-bottom: 40px;
     text-align: center;
+    box-shadow: 0 8px 25px rgba(252, 182, 159, 0.4);
+}
+
+.pricing-header h1 {
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 .pricing-card {

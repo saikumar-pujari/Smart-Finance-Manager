@@ -49,11 +49,12 @@
     <div class="row mt-4">
         <div class="col-md-8">
             <div class="chart-container">
-                <h5 class="mb-4">💰 Expense Breakdown</h5>
-                {% if total_expenses > 0 or total_additions > 0 %}
-                    <div style="width: 300px; height: 300px; margin: 0 auto;">
-                        <canvas id="expenseChart"></canvas>
+                <h5 class="mb-4">💰 Expense Breakdown by Category</h5>
+                {% if total_expenses > 0 %}
+                    <div style="width: 400px; height: 400px; margin: 0 auto;">
+                        <canvas id="categoryChart"></canvas>
                     </div>
+                    <p class="text-center text-muted mt-3"><small>Click on any category to see detailed transactions</small></p>
                 {% else %}
                     <p class="text-muted">Your spending distribution across different categories. Visit your Dashboard to add expenses and see real-time analytics!</p>
                     <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px;">
@@ -65,7 +66,7 @@
         
         <div class="col-md-4">
             <div class="insights-box">
-                <h5 class="mb-3">🤖 AI-Powered Suggestions</h5>
+                <h5 class="mb-3">💡 Smart Spending Insights</h5>
                 
                 {% if suggestions %}
                     {% for suggestion in suggestions %}
@@ -80,10 +81,28 @@
                 {% else %}
                     <div class="ai-suggestion suggestion-info">
                         <div class="suggestion-header">
-                            <span class="suggestion-emoji">�</span>
+                            <span class="suggestion-emoji">📊</span>
                             <strong class="suggestion-title">Start Tracking</strong>
                         </div>
-                        <p class="suggestion-message">Add transactions to get personalized financial insights and AI recommendations!</p>
+                        <p class="suggestion-message">Add transactions to get personalized spending behavior analysis!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Trend Chart -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="mb-4">📈 Monthly Spending Trends (Last 6 Months)</h5>
+                {% if total_expenses > 0 %}
+                    <div style="height: 300px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                {% else %}
+                    <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                        <p class="text-muted">📊 Monthly trends will appear here once you add more transactions</p>
                     </div>
                 {% endif %}
             </div>
@@ -93,19 +112,19 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="insights-box">
-                <h5 class="mb-3">📌 Tips for Better Financial Management</h5>
+                <h5 class="mb-3">🎯 Personalized Financial Coaching</h5>
                 <div class="row">
                     <div class="col-md-4">
-                        <h6 class="text-primary">1. Track Everything</h6>
-                        <p class="small">Record all expenses, no matter how small. This helps identify unnecessary spending.</p>
+                        <h6 class="text-primary">💰 Budget Optimization</h6>
+                        <p class="small">Analyze your spending patterns to identify where you can cut back without sacrificing lifestyle.</p>
                     </div>
                     <div class="col-md-4">
-                        <h6 class="text-primary">2. Set Realistic Goals</h6>
-                        <p class="small">Define achievable monthly savings targets based on your income and expenses.</p>
+                        <h6 class="text-primary">🔍 Overspending Alerts</h6>
+                        <p class="small">Get notified when spending in any category exceeds healthy limits based on your income.</p>
                     </div>
                     <div class="col-md-4">
-                        <h6 class="text-primary">3. Review Regularly</h6>
-                        <p class="small">Check your analytics weekly to stay on top of your finances and adjust as needed.</p>
+                        <h6 class="text-primary">📈 Behavior Tracking</h6>
+                        <p class="small">Monitor your financial habits over time and get personalized tips to improve saving consistency.</p>
                     </div>
                 </div>
             </div>
@@ -124,23 +143,47 @@
     </div>
 </div>
 
+<!-- Category Details Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalTitle">Category Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="categoryModalBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Check if there's data to display
-    const totalExpenses = {{ total_expenses }};
-    const totalAdditions = {{ total_additions }};
+    const categoryData = {{ category_data|safe }};
+    const trendLabels = {{ trend_labels|safe }};
+    const trendExpenses = {{ trend_expenses|safe }};
+    const trendIncome = {{ trend_income|safe }};
     
-    if (totalExpenses > 0 || totalAdditions > 0) {
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        const expenseChart = new Chart(ctx, {
-            type: 'doughnut',
+    // Category Pie Chart
+    if ({{ total_expenses }} > 0) {
+        const categories = Object.keys(categoryData);
+        const amounts = categories.map(cat => categoryData[cat].total);
+        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
+        
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(ctx, {
+            type: 'pie',
             data: {
-                labels: ['Total Expenses', 'Available Balance'],
+                labels: categories,
                 datasets: [{
-                    data: [{{ total_expenses }}, {{ account.current_balance }}],
-                    backgroundColor: ['#e74c3c', '#27ae60'],
-                    borderColor: ['#c0392b', '#229954'],
-                    borderWidth: 2
+                    data: amounts,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
                 }]
             },
             options: {
@@ -148,23 +191,144 @@
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'right',
                         labels: {
-                            font: { size: 14 },
-                            padding: 20,
-                            usePointStyle: true
+                            font: { size: 12 },
+                            padding: 15,
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                return data.labels.map((label, i) => ({
+                                    text: `${label}: ₹${data.datasets[0].data[i].toFixed(0)}`,
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    index: i
+                                }));
+                            }
                         }
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return '₹' + context.parsed + '.00';
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ₹${value.toFixed(0)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                onClick: function(event, elements) {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const category = categories[index];
+                        showCategoryDetails(category);
+                    }
+                }
+            }
+        });
+    }
+    
+    // Monthly Trend Chart
+    if ({{ total_expenses }} > 0) {
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: 'Expenses',
+                    data: trendExpenses,
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }, {
+                    label: 'Income',
+                    data: trendIncome,
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 14 },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₹' + context.parsed.y.toFixed(0);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
                             }
                         }
                     }
                 }
             }
         });
+    }
+    
+    // Show category details in modal
+    function showCategoryDetails(category) {
+        const data = categoryData[category];
+        const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        
+        document.getElementById('categoryModalTitle').textContent = category + ' - Detailed Transactions';
+        
+        let html = `
+            <div class="mb-3">
+                <h6>Total Spent: <strong style="color: #e74c3c;">₹${data.total.toFixed(2)}</strong></h6>
+                <p class="text-muted">Number of transactions: ${data.count}</p>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th class="text-end">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        data.transactions.forEach(trans => {
+            html += `
+                <tr>
+                    <td>${trans.date}</td>
+                    <td>${trans.description}</td>
+                    <td class="text-end">₹${trans.amount.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+        `;
+        
+        document.getElementById('categoryModalBody').innerHTML = html;
+        modal.show();
     }
 </script>
 {% endblock content %}

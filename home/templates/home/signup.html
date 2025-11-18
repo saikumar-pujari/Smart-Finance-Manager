@@ -85,6 +85,10 @@
             <div class="form-group">
                 {{ form.password1.label_tag }}
                 {{ form.password1 }}
+                <div class="show-password-container">
+                    <input type="checkbox" id="show-password1" onclick="togglePasswordCheckbox('id_password1', 'show-password1')">
+                    {% comment %} <label for="show-password1">Show Password</label> {% endcomment %}
+                </div>
                 {% if form.password1.errors %}
                     <ul class="errorlist">
                         {% for error in form.password1.errors %}
@@ -103,6 +107,10 @@
             <div class="form-group">
                 {{ form.password2.label_tag }}
                 {{ form.password2 }}
+                <div class="show-password-container">
+                    <input type="checkbox" id="show-password2" onclick="togglePasswordCheckbox('id_password2', 'show-password2')">
+                    {% comment %} <label for="show-password2">Show Password</label> {% endcomment %}
+                </div>
                 {% if form.password2.errors %}
                     <ul class="errorlist">
                         {% for error in form.password2.errors %}
@@ -122,4 +130,17 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePasswordCheckbox(fieldId, checkboxId) {
+    const passwordField = document.getElementById(fieldId);
+    const checkbox = document.getElementById(checkboxId);
+    
+    if (checkbox.checked) {
+        passwordField.type = 'text';
+    } else {
+        passwordField.type = 'password';
+    }
+}
+</script>
 {% endblock content %}

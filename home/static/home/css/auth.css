@@ -66,6 +66,41 @@
     transition: all 0.3s ease;
 }
 
+.show-password-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+    gap: 8px;
+}
+
+.show-password-container input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.show-password-container label {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    font-size: 0.9rem !important;
+    color: #666 !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.show-password-container label:hover {
+    color: #667eea;
+}
+
 .form-group input:focus {
     outline: none;
     border-color: #667eea;

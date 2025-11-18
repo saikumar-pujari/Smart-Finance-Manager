@@ -147,7 +147,9 @@ class ExpenseForm(forms.Form):
     
     Fields:
     - expense_amount: Amount to deduct as expense
+    - category: Category of the expense
     - description: Description of the expense (optional)
+    - receipt_image: Receipt/photo upload (optional)
     """
     expense_amount = forms.DecimalField(
         label='Expense Amount',
@@ -157,7 +159,27 @@ class ExpenseForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Enter expense amount',
             'step': '0.01',
-            'min': '0'
+            'min': '0',
+            'id': 'expense_amount_input'
+        })
+    )
+    category = forms.ChoiceField(
+        label='Category',
+        choices=[
+            ('', '-- Select Category (Optional) --'),
+            ('Food', '🍔 Food & Dining'),
+            ('Transport', '🚗 Transport'),
+            ('Shopping', '🛍️ Shopping'),
+            ('Bills', '💡 Bills & Utilities'),
+            ('Entertainment', '🎬 Entertainment'),
+            ('Health', '🏥 Health & Fitness'),
+            ('Education', '📚 Education'),
+            ('Other', '📦 Other'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'expense_category_input'
         })
     )
     description = forms.CharField(
@@ -166,7 +188,17 @@ class ExpenseForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'e.g., Grocery, Transport (optional)'
+            'placeholder': 'e.g., Grocery, Transport (optional)',
+            'id': 'expense_description_input'
+        })
+    )
+    receipt_image = forms.ImageField(
+        label='Receipt/Photo',
+        required=False,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+            'id': 'receipt_image_input'
         })
     )
 
@@ -207,5 +239,119 @@ class TargetAmountForm(forms.Form):
             'placeholder': 'Enter target savings amount',
             'step': '0.01',
             'min': '0'
+        })
+    )
+
+
+class RecurringExpenseForm(forms.Form):
+    """
+    Form to add recurring expenses (subscriptions, EMI, loans).
+    
+    Fields:
+    - expense_type: Type of recurring expense
+    - name: Name of subscription/EMI/loan
+    - amount: Monthly payment amount
+    - billing_date: Day of month for payment
+    - start_date: Start date
+    - end_date: End date (optional for subscriptions)
+    - reminder_days: Days before to remind
+    - auto_deduct: Auto-create expense transaction
+    - notes: Additional notes
+    """
+    expense_type = forms.ChoiceField(
+        label='Type',
+        choices=[
+            ('subscription', '📱 Subscription (Netflix, Spotify, etc.)'),
+            ('emi', '💳 EMI (Monthly Installments)'),
+            ('loan', '🏦 Loan Payment'),
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'expense_type_input'
+        })
+    )
+    name = forms.CharField(
+        label='Name',
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., Netflix Premium, Car EMI, Home Loan',
+            'id': 'recurring_name_input'
+        })
+    )
+    amount = forms.DecimalField(
+        label='Monthly Amount',
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter monthly payment amount',
+            'step': '0.01',
+            'min': '0',
+            'id': 'recurring_amount_input'
+        })
+    )
+    billing_date = forms.IntegerField(
+        label='Billing Date',
+        min_value=1,
+        max_value=31,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Day of month (1-31)',
+            'min': '1',
+            'max': '31',
+            'id': 'billing_date_input'
+        }),
+        help_text='Day of month when payment is due'
+    )
+    start_date = forms.DateField(
+        label='Start Date',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'start_date_input'
+        }),
+        required=False
+    )
+    end_date = forms.DateField(
+        label='End Date',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'end_date_input'
+        }),
+        required=False,
+        help_text='Leave empty for ongoing subscriptions'
+    )
+    reminder_days = forms.IntegerField(
+        label='Reminder Days',
+        initial=3,
+        min_value=0,
+        max_value=30,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '3',
+            'min': '0',
+            'max': '30',
+            'id': 'reminder_days_input'
+        }),
+        help_text='Get reminder X days before due date'
+    )
+    auto_deduct = forms.BooleanField(
+        label='Auto-create expense on due date',
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+            'id': 'auto_deduct_input'
+        })
+    )
+    notes = forms.CharField(
+        label='Notes',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Additional notes (optional)',
+            'rows': 3,
+            'id': 'recurring_notes_input'
         })
     )

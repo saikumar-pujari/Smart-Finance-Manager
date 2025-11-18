@@ -45,9 +45,10 @@
             <div class="stat-label">Total Additions</div>
             <div class="stat-value" style="color: #3498db;">₹{{ account.total_amount }}</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Target Amount</div>
-            <div class="stat-value" style="color: #9b59b6;">₹{{ account.target_amount }}</div>
+        <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='{% url 'receiptspage' %}'">
+            <div class="stat-label">📸 Receipts</div>
+            <div class="stat-value" style="color: #f39c12;">{{ receipts_count }}</div>
+            <small style="color: #666; font-size: 0.75rem; margin-top: 5px; display: block;">Click to view all receipts</small>
         </div>
     </div>
 
@@ -78,6 +79,13 @@
                             {% if transaction.description %}
                                 <div class="transaction-description">
                                     {{ transaction.description }}
+                                </div>
+                            {% endif %}
+                            {% if transaction.receipt_image %}
+                                <div class="transaction-receipt">
+                                    <a href="{{ transaction.receipt_image.url }}" target="_blank" style="color: #667eea; text-decoration: none;">
+                                        <i class="bi bi-image"></i> View Receipt
+                                    </a>
                                 </div>
                             {% endif %}
                         </div>

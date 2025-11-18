@@ -1,12 +1,17 @@
 /* ==================== ANALYTICS STYLES ==================== */
 
 .analytics-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f602a 0%, #1597bb 100%);
     color: white;
     padding: 40px 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     margin-bottom: 30px;
     text-align: center;
+    box-shadow: 0 8px 25px rgba(67, 233, 123, 0.3);
+}
+
+.analytics-header h1 {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card {
