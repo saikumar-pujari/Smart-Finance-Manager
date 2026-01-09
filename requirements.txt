@@ -1,5 +1,4 @@
 asgiref==3.10.0
-audioop-lts==0.2.2
 certifi==2025.11.12
 charset-normalizer==3.4.4
 Django==5.2.8
