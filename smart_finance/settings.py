@@ -17,18 +17,13 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,financemanagers.tech,www.financemanagers.tech,.onrender.com'
+    'localhost,127.0.0.1,financemanagers.tech,www.financemanagers.tech,.vercel.app'
 ).split(',')
-
-# Allow Render to set external hostname automatically
-RENDER_HOST = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_HOST and RENDER_HOST not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(RENDER_HOST)
 
 # CSRF trusted origins for production (Render + custom domain)
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS',
-    'https://financemanagers.tech,https://www.financemanagers.tech,https://*.onrender.com'
+    'https://financemanagers.tech,https://www.financemanagers.tech,https://*.vercel.app'
 ).split(',')
 
 # Honor X-Forwarded-Proto from reverse proxy
