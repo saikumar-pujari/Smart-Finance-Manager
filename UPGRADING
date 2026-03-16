@@ -1,0 +1,2 @@
+these project will be updated and will be improved futher down with with background services like celery and kafka, and also implement the cache based system will be added for external cache redis will be added and --
+-- for the internal cache file_cache will be added where the session and only the admin_data will be withhold for 8600 everyday!
