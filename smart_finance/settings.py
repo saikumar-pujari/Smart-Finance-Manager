@@ -13,12 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-1t7x6am^(#2_piw6-ll)owk8-8g#0b+k^p&4(yhk$885npn40g')
 
 # Development defaults (override with env vars in prod)
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
-
-ALLOWED_HOSTS = os.getenv(
-    'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,financemanagers.tech,www.financemanagers.tech,.vercel.app'
-).split(',')
+DEBUG = True
 
 # CSRF trusted origins for production (Render + custom domain)
 CSRF_TRUSTED_ORIGINS = os.getenv(
